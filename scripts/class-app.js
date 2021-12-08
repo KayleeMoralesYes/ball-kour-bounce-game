@@ -123,7 +123,7 @@ class Game {
 		this.wireUpListeners();
 
 		this.bgImage = new Image();
-		this.bgImage.src = "/images/NOTAWARCRIME.PNG";
+		this.bgImage.src = "/images/waves_glow.png";
 
 		// w / 600 = 2048 / 1152
 
@@ -187,7 +187,7 @@ class Game {
 			this.imageHeight
 		);
 
-		ctx.fillStyle = "hsla(120, 100%, 100%, 0.2)";
+		ctx.fillStyle = "hsla(120, 100%, 50%, 0.2)";
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
 		ctx.restore();
 
@@ -281,7 +281,7 @@ class SafePlatform {
 	 */
 	update(elapsedTime) {
 		this.x -= this.game.speed;
-		this.isVisible = this.x + this.width > 0 && this.x < canvas.width;
+		this.isVisible = this.x + this.width > 0;
 	}
 
 	render() {
@@ -316,11 +316,9 @@ class ScorePlatform {
 	update(elapsedTime) {
 		this.x -= this.game.speed;
 		this.isVisible = this.x + this.width > 0;
-		this.isVisible = this.x + this.width > 0 && this.x < canvas.width;
 	}
 
 	render() {
-		if (!this.isVisible) return;
 		ctx.save();
 		ctx.fillStyle = "hsla(120, 100%, 50%, 1)";
 		ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -361,8 +359,15 @@ class PlatformManager {
 let kb = new KeyboardState();
 let game = new Game(kb);
 
-let platforms = [new SafePlatform(game)];
-let pm = new PlatformManager(platforms, game);
+let p1 = new ScorePlatform(game);
+let p2 = new ScorePlatform(game);
+let p3 = new ScorePlatform(game);
+
+p1.x = 400 + 50;
+p2.x = p1.x + 100;
+p3.x = p2.x + 100;
+
+let platforms = [new SafePlatform(game), p1, p2, p3];
 let player = new Player(platforms);
 let tracers = [new Tracer(player, game)];
 
@@ -376,7 +381,6 @@ function gameLoop(timestamp) {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	tracers.push(new Tracer(player, game));
-	pm.update();
 	let gameObjects = [game, ...tracers, player, ...platforms];
 
 	gameObjects.forEach((o) => {
