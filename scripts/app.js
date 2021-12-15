@@ -407,8 +407,9 @@ class Backgrounds {
 
 let kb = new KeyboardState();
 let game = new Game(kb);
-let background = new Backgrounds(game, "/images/clouds-medium.png", 0.3);
-let background2 = new Backgrounds(game, "/images/clouds-medium.png", 1);
+let background = new Backgrounds(game, "/images/TREESILLO.png", 0.3);
+let background2 = new Backgrounds(game, "/images/clouds-medium.png", 0.35);
+let background3 = new Backgrounds(game, "/images/tree2.png", 0.1);
 let platforms = [new SafePlatform(game)];
 let pm = new PlatformManager(platforms, game);
 let player = new Player(platforms);
@@ -429,6 +430,7 @@ function gameLoop(timestamp) {
 		game,
 		background,
 		background2,
+		background3,
 		...tracers,
 		player,
 		...platforms,
