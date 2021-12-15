@@ -111,7 +111,7 @@ class Game {
 	constructor(kb) {
 		this.kb = kb;
 		this.speed = 0;
-		this.maxSpeed = 100;
+		this.maxSpeed = 50;
 		this.accelerationRate = 5;
 		this.accelerationInterval = 100;
 		this.timeSinceLastAcceleration = 0;
@@ -123,7 +123,7 @@ class Game {
 		this.wireUpListeners();
 
 		this.bgImage = new Image();
-		this.bgImage.src = "/images/NOTAWARCRIME.PNG";
+		this.bgImage.src = "/images/TREEEEEE.PNG";
 
 		// w / 600 = 2048 / 1152
 
@@ -192,8 +192,8 @@ class Game {
 		ctx.restore();
 
 		ctx.save();
-		ctx.fillStyle = "pink";
-		ctx.strokeStyle = "purple";
+		ctx.fillStyle = "Black";
+		ctx.strokeStyle = "White";
 		ctx.font = "90px fantasy";
 
 		ctx.fillText(`${this.score}`, this.scoreX, this.scoreY);
@@ -285,6 +285,7 @@ class SafePlatform {
 	}
 
 	render() {
+		if (!this.isVisible) return;
 		ctx.save();
 		ctx.fillStyle = "hsla(0, 0%, 20%, 1)";
 		ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -298,8 +299,8 @@ class ScorePlatform {
 	 */
 	constructor(g) {
 		this.game = g;
-		this.width = 32;
-		this.height = canvas.height;
+		this.width = 50;
+		this.height = 10000;
 
 		this.x = 0;
 		this.y = canvas.height - 100;
@@ -322,7 +323,7 @@ class ScorePlatform {
 	render() {
 		if (!this.isVisible) return;
 		ctx.save();
-		ctx.fillStyle = "hsla(120, 100%, 50%, 1)";
+		ctx.fillStyle = "hsla(4, 0%, 27%, 1)";
 		ctx.fillRect(this.x, this.y, this.width, this.height);
 		ctx.restore();
 	}
@@ -358,9 +359,56 @@ class PlatformManager {
 	}
 }
 
+class Backgrounds {
+	/**
+	 * @param {Game} g
+	 * @param {string} src
+	 * @param {number} [so]
+	 */
+	constructor(g, src, so) {
+		this.x = 0;
+		this.y = 0;
+		this.g = g;
+		this.so = so;
+
+		this.scrollImage = new Image();
+		this.scrollImage.src = src;
+
+		this.imageHeight = canvas.height;
+		this.imageWidth =
+			(canvas.height * this.scrollImage.width) / this.scrollImage.height;
+	}
+	update() {
+		this.x -= this.g.speed * this.so;
+		if (this.x + this.imageWidth <= 0) {
+			this.x = 0;
+		}
+	}
+	render() {
+		ctx.save();
+		ctx.drawImage(
+			this.scrollImage,
+			this.x,
+			0,
+			this.imageWidth,
+			this.imageHeight
+		);
+
+		ctx.drawImage(
+			this.scrollImage,
+			this.x + this.imageWidth,
+			0,
+			this.imageWidth,
+			this.imageHeight
+		);
+		ctx.restore();
+	}
+}
+
 let kb = new KeyboardState();
 let game = new Game(kb);
-
+let background = new Backgrounds(game, "/images/clouds-medium.png", 0.3);
+let background2 = new Backgrounds(game, "/images/clouds-medium.png", 1);
 let platforms = [new SafePlatform(game)];
 let pm = new PlatformManager(platforms, game);
 let player = new Player(platforms);
@@ -377,7 +425,14 @@ function gameLoop(timestamp) {
 
 	tracers.push(new Tracer(player, game));
 	pm.update();
-	let gameObjects = [game, ...tracers, player, ...platforms];
+	let gameObjects = [
+		game,
+		background,
+		background2,
+		...tracers,
+		player,
+		...platforms,
+	];
 
 	gameObjects.forEach((o) => {
 		o.update(timeElapsed);
